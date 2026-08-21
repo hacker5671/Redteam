@@ -1,0 +1,14 @@
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0b0e14; color:#00ffc8; font-family:'Courier New',monospace; padding:20px; }
+.container { max-width:1000px; margin:0 auto; }
+h1 { font-size:2.2rem; margin-bottom:20px; text-shadow:0 0 15px #ff004466; color:#ff0044; }
+.client-card { background:#141a24; border:1px solid #ff004466; padding:12px 16px; margin:8px 0; border-radius:8px; display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+.status { display:inline-block; width:12px; height:12px; border-radius:50%; }
+.status.online { background:#00ff41; box-shadow:0 0 10px #00ff41; }
+select, input, button { background:#0b0e14; border:1px solid #ff004466; color:#00ffc8; padding:6px 10px; border-radius:4px; }
+select { min-width:100px; }
+input { flex:1; min-width:120px; }
+button { background:#ff0044; color:#fff; border:none; font-weight:bold; cursor:pointer; }
+button:hover { background:#cc0033; }
+hr { border-color:#ff004466; margin:20px 0; }
+#logOutput { background:#0b0e14; padding:12px; border-radius:6px; border:1px solid #ff004466; height:400px; overflow-y:auto; white-space:pre-wrap; color:#88ffdd; font-size:0.85rem; }
